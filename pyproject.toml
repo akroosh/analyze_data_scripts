@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "analyze-data-scripts"
+version = "0.1.0"
+description = ""
+authors = ["Anton Kroosh <antonkroosh@gmail.com>"]
+readme = "README.md"
+packages = [{include = "analyze_data_scripts"}]
+
+[tool.poetry.dependencies]
+python = ">=3.11,<3.13"
+ruff = "^0.0.292"
+pydantic = {extras = ["email"], version = "^2.4.2"}
+iso-639 = {git = "https://github.com/noumar/iso639.git", tag = "0.4.5"}
+pydantic-extra-types = "^2.1.0"
+numpy = "^1.26.0"
+pandas = "^2.1.1"
+pycountry = "^22.3.5"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
