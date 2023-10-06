@@ -20,13 +20,13 @@ class EstimateCountryModel(BaseModel):
     value: int
 
 
-class EstimatesModel(BaseModel):
+class EstimateModel(BaseModel):
     td: date
     countries: list[EstimateCountryModel]
 
 
 class DownloadsSchema(BaseModel):
-    estimates: list[EstimatesModel]
+    estimates: list[EstimateModel]
     estimates_agg: dict[str, int]
     estimates_total: str
     regions: dict[str, Any]

@@ -1,4 +1,4 @@
-from pydantic import BaseModel, AnyUrl, EmailStr, field_validator, ValidationError
+from pydantic import BaseModel, AnyUrl, EmailStr, field_validator
 from datetime import datetime
 from pydantic_extra_types.country import CountryAlpha2
 from typing import Any
