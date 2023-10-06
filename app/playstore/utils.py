@@ -5,7 +5,7 @@ from pandas import Series
 from pydantic_core._pydantic_core import ValidationError
 
 from config import PLAYSTORE_FILE_PATH
-from schema import SchemaValidator
+from app.playstore.schema import SchemaValidator
 
 
 def check_data_types(df):

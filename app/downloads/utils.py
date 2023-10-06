@@ -2,7 +2,7 @@ import json
 from collections import defaultdict
 from typing import Any, Tuple
 
-from schema import DownloadsSchema
+from app.downloads.schema import DownloadsSchema
 from pydantic import ValidationError
 from config import DOWNLOAD_FILE_PATH
 
