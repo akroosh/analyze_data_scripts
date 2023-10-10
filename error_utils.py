@@ -25,9 +25,13 @@ def check_and_count_mismatches(data: dict, schema_class: BaseModel) -> Tuple[dic
     return missing_columns_errors, wrong_type_errors
 
 
-def check_row_and_print_results(data: dict, schema_class: BaseModel) -> Tuple[dict[str, int], dict[str, int]]:
+def check_row_and_print_results(
+        data: dict, schema_class: BaseModel, row_number: int
+) -> Tuple[dict[str, int], dict[str, int]]:
     """Check if the data in row matches the schema and print the results."""
-    print("-"*20)
+
+    print(f"Row: {row_number}")
+    print("-" * 20)
     missing_columns_errors, wrong_type_errors = check_and_count_mismatches(data, schema_class)
     print_validation_results(missing_columns_errors, wrong_type_errors)
     return missing_columns_errors, wrong_type_errors

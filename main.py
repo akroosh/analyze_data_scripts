@@ -1,4 +1,4 @@
-from app.playstore.utils import validate_json_file as playstore_validate
+from app.playstore.utils import validate_jsonl as playstore_validate
 from app.downloads.utils import validate_json_file as downloads_validate
 from config import PLAYSTORE_FILE_PATH, DOWNLOAD_FILE_PATH
 
