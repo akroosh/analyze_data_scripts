@@ -44,6 +44,14 @@ python main.py
 ```
 
 
+## Logging
+Results of each execution are logged in the `logs/filename` folder.
+Log files are named with the date and time of execution, following the format specified in the `LOGS_NAME_DATE_FORMAT` variable in the `config.py` file which you can change.
+
+Existing results files can be found in the `logs/filename` folder.
+For example, a sample log files has been provided in the repository for reference.
+
+
 ## Configuring File Names
 File names for utility files are configured in config.py.
 
