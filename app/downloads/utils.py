@@ -1,11 +1,12 @@
 import json
 
+from app.downloads.loggers import logger
 from app.downloads.schema import DownloadsSchema
 from config import DOWNLOAD_FILE_PATH
-from error_utils import check_and_count_mismatches, print_validation_results
+from error_utils import ValidatorService
 
 
-def open_data_file(file_path: str) -> dict:
+def open_json_file(file_path: str) -> dict:
     """Open a json file and returns its content as a dict"""
     data = None
     try:
@@ -18,9 +19,12 @@ def open_data_file(file_path: str) -> dict:
 
 def validate_json_file(file_path: str) -> None:
     """Validate a json file against the schema."""
-    data = open_data_file(file_path)
-    missing_columns_errors, wrong_type_errors = check_and_count_mismatches(data, schema_class=DownloadsSchema)
-    print_validation_results(missing_columns_errors, wrong_type_errors)
+    data = open_json_file(file_path)
+    validator_service = ValidatorService(DownloadsSchema, logger)
+
+    validator_service.check_and_count_mismatches(data)
+    validator_service.print_incorrect_columns()
+    validator_service.print_missing_columns()
 
 
 if __name__ == "__main__":

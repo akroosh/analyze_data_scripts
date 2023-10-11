@@ -1,47 +1,66 @@
 from collections import defaultdict
-from typing import Any, Tuple
+from enum import Enum
+from logging import Logger
+from typing import Any
 
-from pydantic import ValidationError, BaseModel
-
-
-def is_missing_column(error: dict[str, Any]) -> bool:
-    """Check if the error is a missing column error."""
-    return not error["input"] or error["type"] == "missing"
+from pydantic import ValidationError
 
 
-def check_and_count_mismatches(data: dict, schema_class: BaseModel) -> Tuple[dict[str, int], dict[str, int]]:
-    """Check if the data matches the schema and count the errors."""
-    missing_columns_errors = defaultdict(lambda: 0)
-    wrong_type_errors = defaultdict(lambda: 0)
-    try:
-        schema_class(**data)
-    except ValidationError as e:
-        for error in e.errors():
-            column = error["loc"][0]
-            if is_missing_column(error):
-                missing_columns_errors[column] += 1
-            else:
-                wrong_type_errors[column] += 1
-    return missing_columns_errors, wrong_type_errors
+class ValidatorService:
+    class ErrorType(Enum):
+        missing = "missing"
+        value_error = "value_error"
+        incorrect = "incorrect"
 
+    def __init__(self, validator_class, logger: Logger):
+        self.validator_class = validator_class
 
-def check_row_and_print_results(
-        data: dict, schema_class: BaseModel, row_number: int
-) -> Tuple[dict[str, int], dict[str, int]]:
-    """Check if the data in row matches the schema and print the results."""
+        self.missing_columns_errors = defaultdict(lambda: 0)
+        self.incorrect_type_errors = defaultdict(lambda: 0)
+        self.custom_errors = defaultdict(lambda: 0)
 
-    print(f"Row: {row_number}")
-    print("-" * 20)
-    missing_columns_errors, wrong_type_errors = check_and_count_mismatches(data, schema_class)
-    print_validation_results(missing_columns_errors, wrong_type_errors)
-    return missing_columns_errors, wrong_type_errors
+        self.logger = logger
 
+    @classmethod
+    def is_missing_column(cls, error: dict[str, Any]) -> bool:
+        """Check if the error is a missing column error."""
+        return not error["input"] or error["type"] == cls.ErrorType.missing.value
 
-def print_validation_results(missing_columns_errors: dict[str, int], wrong_type_errors: dict[str, int]) -> None:
-    """Print the results of the validation."""
-    if missing_columns_errors:
-        for column, count in missing_columns_errors.items():
-            print(f"Missing column `{column}`: {count} times")
-    if wrong_type_errors:
-        for column, count in wrong_type_errors.items():
-            print(f"Wrong column `{column}`: {count} times")
+    def handle_error(self, error: ValidationError):
+        """Find error column, type and calculate total errors values."""
+
+        column = "__".join([str(loc) for loc in error["loc"]])
+
+        if self.is_missing_column(error):
+            self.missing_columns_errors[column] += 1
+        else:
+            self.incorrect_type_errors[column] += 1
+
+    def check_and_count_mismatches(self, data: dict):
+        """Check if the data matches the schema and count the errors."""
+        try:
+            self.validator_class(**data)
+        except ValidationError as e:
+            for error in e.errors():
+                self.handle_error(error)
+
+    def check_row_and_print_results(self, data: dict, row_number: int):
+        """Check if the data in row matches the schema and print the results."""
+
+        self.check_and_count_mismatches(data)
+        self.print_missing_columns(row_number=row_number)
+        self.print_incorrect_columns(row_number=row_number)
+
+    def print_missing_columns(self, **kwargs) -> None:
+        """Log the results of the missing columns validation."""
+        for column, error_count in self.missing_columns_errors.items():
+            self.logger.error({
+                "column": column, "error_type": self.ErrorType.missing.value, "total_error_count": error_count, **kwargs
+            })
+
+    def print_incorrect_columns(self, **kwargs) -> None:
+        """Log the results of the wrong columns validation."""
+        for column, error_count in self.incorrect_type_errors.items():
+            self.logger.error({
+                "column": column, "error_type": self.ErrorType.incorrect.value, "total_error_count": error_count, **kwargs
+            })
