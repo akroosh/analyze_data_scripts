@@ -8,13 +8,12 @@ packages = [{include = "analyze_data_scripts"}]
 
 [tool.poetry.dependencies]
 python = ">=3.11,<3.13"
-ruff = "^0.0.292"
 pydantic = {extras = ["email"], version = "^2.4.2"}
-iso-639 = {git = "https://github.com/noumar/iso639.git", tag = "0.4.5"}
 pydantic-extra-types = "^2.1.0"
-numpy = "^1.26.0"
-pandas = "^2.1.1"
 pycountry = "^22.3.5"
+python-json-logger = "^2.0.7"
+langcodes = "^3.3.0"
+ruff = "^0.0.292"
 jsonlines = "^4.0.0"
 
 
