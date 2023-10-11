@@ -1,8 +1,8 @@
+from langcodes import Language
 from pydantic import BaseModel, AnyUrl, EmailStr, field_validator
 from datetime import datetime
 from pydantic_extra_types.country import CountryAlpha2
 from typing import Any
-from iso639 import languages
 
 
 class SchemaValidator(BaseModel):
@@ -68,12 +68,10 @@ class SchemaValidator(BaseModel):
     @classmethod
     def validate_languages_i18(cls, languages_i18_list: list[str]) -> list[str]:
         """Validate the languages_i18 field using python language lib."""
-        all_languages_codes = [lang.alpha2 for lang in languages.languages if lang.alpha2]
         incorrect_languages = []
 
         for language in languages_i18_list:
-            codes = language.split("-")
-            if any(code not in all_languages_codes for code in codes):
+            if not Language.get(language).is_valid():
                 incorrect_languages.append(language)
 
         if incorrect_languages:
